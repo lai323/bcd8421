@@ -64,6 +64,9 @@ func DecodeToStr(src []byte) (string, error) {
 		if n1 != 0x00 || foundFirst {
 			s += strconv.Itoa(int(n1))
 		}
+		if n2 != 0x00 && !foundFirst {
+			foundFirst = true
+		}
 		if n2 != 0x00 || foundFirst {
 			s += strconv.Itoa(int(n2))
 		}
