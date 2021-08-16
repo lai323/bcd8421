@@ -39,14 +39,15 @@ func EncodeFromStr(number string, bytesLength int) ([]byte, error) {
 	return numberBytes, nil
 }
 
-func DecodeToStr(src []byte) (string, error) {
+// skipzero 是否跳过数字前面的 0
+func DecodeToStr(src []byte, skipzero bool) (string, error) {
 	var (
 		s          string
 		foundFirst bool
 	)
 
 	for _, b := range src {
-		if b == 0x00 && !foundFirst {
+		if b == 0x00 && !foundFirst && skipzero {
 			continue
 		}
 		// 高 4 位直接是第一个数字
@@ -57,6 +58,11 @@ func DecodeToStr(src []byte) (string, error) {
 		// fmt.Printf("%#b n1:%#b %#b n2:%#b\n", b, n1, b<<4, n2)
 		if n1 > 9 || n2 > 9 {
 			return s, fmt.Errorf("invalid BCD 8421 bytes")
+		}
+		if !skipzero {
+			s += strconv.Itoa(int(n1))
+			s += strconv.Itoa(int(n2))
+			continue
 		}
 		if n1 != 0x00 && !foundFirst {
 			foundFirst = true

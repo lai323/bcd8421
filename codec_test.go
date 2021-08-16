@@ -16,7 +16,7 @@ func TestStringNumberToBytes(t *testing.T) {
 	}
 }
 
-var testcases = []struct {
+var encodeTestcases = []struct {
 	number      string
 	bytes       []byte
 	bytesLength int
@@ -68,8 +68,33 @@ var testcases = []struct {
 	},
 }
 
+var decodeTestcases = []struct {
+	number   string
+	bytes    []byte
+	skipzero bool
+}{
+	{
+		number: "060101150304",
+		bytes:  []byte{0x06, 0x01, 0x01, 0x15, 0x03, 0x04},
+	},
+	{
+		number: "00060101150304",
+		bytes:  []byte{0x00, 0x06, 0x01, 0x01, 0x15, 0x03, 0x04},
+	},
+	{
+		number:   "60101150304",
+		bytes:    []byte{0x06, 0x01, 0x01, 0x15, 0x03, 0x04},
+		skipzero: true,
+	},
+	{
+		number:   "60101150304",
+		bytes:    []byte{0x00, 0x06, 0x01, 0x01, 0x15, 0x03, 0x04},
+		skipzero: true,
+	},
+}
+
 func TestEncodeFromStr(t *testing.T) {
-	for _, tt := range testcases {
+	for _, tt := range encodeTestcases {
 		ret, err := EncodeFromStr(tt.number, tt.bytesLength)
 		if err != nil {
 			panic(err)
@@ -81,8 +106,8 @@ func TestEncodeFromStr(t *testing.T) {
 }
 
 func TestDecodeToStr(t *testing.T) {
-	for _, tt := range testcases {
-		n, err := DecodeToStr(tt.bytes)
+	for _, tt := range decodeTestcases {
+		n, err := DecodeToStr(tt.bytes, tt.skipzero)
 		if err != nil {
 			panic(err)
 		}
